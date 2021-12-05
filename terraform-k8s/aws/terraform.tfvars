@@ -18,9 +18,9 @@ cluster_name = "airflow-eks-data-bootcamp"
 
 cluster_version = "1.20"
 
-instance_type_group1 = "t2.small"
+instance_type_group1 = "t2.medium"
 
-instance_type_group2 = "t2.medium"
+instance_type_group2 = "t2.large"
 
 asg_desired_capacity_group1 = 2
 

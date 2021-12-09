@@ -65,3 +65,39 @@ module "rds" {
 #   acl           = var.acl
 #   versioning    = var.versioning
 # }
+
+resource "aws_redshift_subnet_group" "redshift_subnet_group"{
+  name="redshift-sg"
+  subnet_ids = [module.networking.private_subnets_ids[0], 
+                module.networking.private_subnets_ids[1] ]
+}
+
+resource "aws_redshift_cluster" "myprodcluster" {
+  availability_zone = "us-east-2b"
+  cluster_identifier = "redshift-cluster-deb"
+  cluster_parameter_group_name = "default.redshift-1.0"  
+  cluster_type="single-node"
+  database_name="dev"
+  master_username = "awsuser"
+  node_type="dc2.large"
+  publicly_accessible = false
+  skip_final_snapshot = true
+  master_password = "masterRedshift1"
+  cluster_subnet_group_name = aws_redshift_subnet_group.redshift_subnet_group.name
+  iam_roles = [
+   "arn:aws:iam::921884731971:role/redshift_role",
+   "arn:aws:iam::921884731971:role/redshift-secrets" 
+  ]
+  
+}
+
+#resource "redshift_schema" "movies_schema"{
+#  name="movies_schema"
+#  external_schema{
+#    database_name="movies_db"
+#    data_catalog_source{
+#      iam_role_arns=["arn:aws:iam::921884731971:role/redshift_role"]
+#      create_external_database_if_not_exists = true
+#    }
+#  }
+#}

@@ -17,15 +17,15 @@ dags:
     # ssh examples ssh://git@github.com/apache/airflow.git
     # git@github.com:apache/airflow.git
     # https example: https://github.com/apache/airflow.git
-    repo: https://github.com/eiffela65/Airflow-Templates
-    branch: main
+    repo: https://github.com/capimx/data-bootcamp-capstone.git
+    branch: "dbe-app"
     rev: HEAD
     depth: 1
     # the number of consecutive failures allowed before aborting
     maxFailures: 0
     # subpath within the repo where dags are located
     # should be "" if dags are at repo root
-    subPath: ""
+    subPath: "/dags"
 
 
 logs:

@@ -37,7 +37,7 @@ welcome_operator = PythonOperator(task_id='welcome_task',
 
 create_table_operator = PostgresOperator(   task_id="create_table_task",
                                             sql=create_table_schema_cmd,
-                                            aws_conn_postgres_id = 'postgres_default',
+                                            postgres_conn_id = 'postgres_default',
                                             dag=dag
                                         )
 

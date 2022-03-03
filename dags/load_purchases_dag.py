@@ -14,7 +14,7 @@ from custom_modules.operator_s3_to_postgres import S3ToPostgresTransfer
 from airflow.operators.python_operator import PythonOperator
 
 create_table_schema_cmd = """
-        CREATE SCHEMA purchase;
+        CREATE SCHEMA IF NOT EXISTS purchase;
         CREATE TABLE IF NOT EXISTS purchase.purchases (    
                         invoice_number varchar(10),
                         stock_code     varchar(20),

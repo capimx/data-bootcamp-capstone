@@ -1,6 +1,10 @@
 from datetime import datetime
+import io
 from airflow.providers.postgres.operators.postgres import PostgresOperator
-
+from airflow.providers.postgres.hooks.postgres import PostgresHook
+from airflow.providers.amazon.aws.hooks.s3 import S3Hook
+import logging
+import pandas as pd
 
 # The DAG object; we'll need this to instantiate a DAG
 from airflow import DAG
@@ -22,6 +26,84 @@ create_table_schema_cmd = """
                         country        varchar(20));
           """
 
+aws_conn_postgres_id = 'postgres_default'
+
+def load_data():
+    
+    task_id = 'dag_s3_to_postgres'
+    schema = 'bootcampdb'
+    table= 'user_purchases'
+    s3_bucket = 'deb-bronze'
+    s3_key =  'user_purchase.csv'    
+    aws_conn_id = 'aws_s3_default'
+
+    # Create instances for hooks        
+    pg_hook = PostgresHook(postgre_conn_id = aws_conn_postgres_id)
+    s3 = S3Hook(aws_conn_id = aws_conn_id, verify = None)
+
+    # Locate file
+
+    if not s3.check_for_key(s3_key, s3_bucket):
+        
+            logging.error("The key {0} does not exist".format(s3_key))
+            
+    s3_key_object = s3.get_key(s3_key, s3_bucket)
+    
+    # # Create table
+    # pg_hook.run(create_table_cmd)
+    # #curr = pg_hook.get_conn().cursor()
+
+    # 
+    file_content = s3_key_object.get()['Body'].read().decode(encoding = "utf-8", errors = "ignore")
+  
+    list_target_fields = [    'InvoiceNo', 
+                              'StockCode',
+                              'Description', 
+                              'Quantity', 
+                              'InvoiceDate', 
+                              'UnitPrice', 
+                              'CustomerID', 
+                              'Country'
+                              ]
+    # schema definition for data types of the source.
+    schema = {
+                'InvoiceNo': 'string',
+                'StockCode': 'string',
+                'Description': 'string',
+                'Quantity': 'string',
+                'InvoiceDate': 'string',
+                'UnitPrice': 'float64',                                
+                'CustomerID': 'string',
+                'Country': 'string'
+                }  
+    date_cols = ['fechaRegistro']         
+
+    # read a csv file with the properties required.
+    df_products = pd.read_csv(io.StringIO(file_content), 
+                        header=0, 
+                        delimiter=",",
+                        quotechar='"',
+                        low_memory=False,
+                        #parse_dates=date_cols,                                             
+                        dtype=schema                         
+                        )
+    # Reformat df
+    df_products = df_products.replace(r"[\"]", r"'")
+    df_products['CustomerID'] = df_products['CustomerID'].fillna("")
+    df_products['Description'] = df_products['Description'].fillna("")
+    list_df_products = df_products.values.tolist()
+    list_df_products = [tuple(x) for x in list_df_products]
+    current_table = "user_purchases"
+
+    #Insert rows
+    pg_hook.insert_rows(current_table,  
+                                list_df_products, 
+                                target_fields = list_target_fields, 
+                                commit_every = 1000,
+                                replace = False) 
+   
+    print("Finish")   
+
 def print_welcome():
     return 'Welcome from custom operator - Airflow DAG!'
 
@@ -35,13 +117,19 @@ welcome_operator = PythonOperator(task_id='welcome_task',
                                   python_callable=print_welcome, 
                                   dag=dag)
 
+load_data_task = PythonOperator (
+    task_id='load_data',
+    python_callable=load_data, 
+    dag=dag
+)
+
 create_table_operator = PostgresOperator(   task_id="create_table_task",
                                             sql=create_table_schema_cmd,
-                                            postgres_conn_id = 'postgres_default',
+                                            postgres_conn_id = aws_conn_postgres_id,
                                             dag=dag
                                         )
 
-s3_to_postgres_operator = S3ToPostgresTransfer(
+""" s3_to_postgres_operator = S3ToPostgresTransfer(
                             task_id = 'dag_s3_to_postgres',
                             schema =  'purchase', #'public'
                             table= 'purchases',
@@ -50,8 +138,8 @@ s3_to_postgres_operator = S3ToPostgresTransfer(
                             aws_conn_postgres_id = 'postgres_default',
                             aws_conn_id = 'aws_default',   
                             dag = dag
-)
+) """
 
-welcome_operator >> create_table_operator >> s3_to_postgres_operator
+welcome_operator >> create_table_operator >> load_data_task
 
 #welcome_operator.set_downstream(s3_to_postgres_operator)

@@ -88,8 +88,8 @@ def load_data():
                         )
     # Reformat df
     df_products = df_products.replace(r"[\"]", r"'")
-    df_products['customer_id'] = df_products['customer_id'].fillna("")
-    df_products['detail'] = df_products['detail'].fillna("")
+    df_products['CustomerID'] = df_products['CustomerID'].fillna("")
+    df_products['Description'] = df_products['Description'].fillna("")
     list_df_products = df_products.values.tolist()
     list_df_products = [tuple(x) for x in list_df_products]
     current_table = "purchase.user_purchases"

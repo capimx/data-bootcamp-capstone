@@ -92,7 +92,7 @@ def load_data():
     df_products['Description'] = df_products['Description'].fillna("")
     list_df_products = df_products.values.tolist()
     list_df_products = [tuple(x) for x in list_df_products]
-    current_table = "user_purchases"
+    current_table = "purchase.user_purchases"
 
     #Insert rows
     pg_hook.insert_rows(current_table,  

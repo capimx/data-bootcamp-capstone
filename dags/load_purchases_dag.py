@@ -14,7 +14,7 @@ from airflow.operators.python_operator import PythonOperator
 
 create_table_schema_cmd = """
         CREATE SCHEMA IF NOT EXISTS purchase;
-        CREATE TABLE IF NOT EXISTS purchase.purchases (    
+        CREATE TABLE IF NOT EXISTS purchase.user_purchases (    
                         invoice_number varchar(10),
                         stock_code     varchar(20),
                         detail         varchar(1000),

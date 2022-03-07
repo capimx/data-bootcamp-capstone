@@ -30,9 +30,9 @@ aws_conn_postgres_id = 'postgres_default'
 def load_data():
     
     task_id = 'dag_s3_to_postgres'
-    schema = 'bootcampdb'
+    schema = 'dbname'
     table= 'user_purchases'
-    s3_bucket = 'deb-bronze'
+    s3_bucket = 'wz-de-academy-mau-raw-data'
     s3_key =  'user_purchase.csv'    
     aws_conn_id = 'aws_s3_default'
 
@@ -132,7 +132,7 @@ create_table_operator = PostgresOperator(   task_id="create_table_task",
                             task_id = 'dag_s3_to_postgres',
                             schema =  'purchase', #'public'
                             table= 'purchases',
-                            s3_bucket = 'wz-de-academy-mau-raw-data-bucket',
+                            s3_bucket = 'wz-de-academy-mau-raw-data',
                             s3_key =  'user_purchase.csv',
                             aws_conn_postgres_id = 'postgres_default',
                             aws_conn_id = 'aws_default',   

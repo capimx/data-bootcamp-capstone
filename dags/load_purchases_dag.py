@@ -55,27 +55,27 @@ def load_data():
     # 
     file_content = s3_key_object.get()['Body'].read().decode(encoding = "utf-8", errors = "ignore")
   
-    list_target_fields = [    'InvoiceNo', 
-                              'StockCode',
-                              'Description', 
-                              'Quantity', 
-                              'InvoiceDate', 
-                              'UnitPrice', 
-                              'CustomerID', 
-                              'Country'
+    list_target_fields = [    'invoice_number', 
+                              'stock_code',
+                              'detail', 
+                              'quantity', 
+                              'invoice_date', 
+                              'unit_price', 
+                              'customer_id', 
+                              'country'
                               ]
     # schema definition for data types of the source.
     schema = {
-                'InvoiceNo': 'string',
-                'StockCode': 'string',
-                'Description': 'string',
-                'Quantity': 'string',
-                'InvoiceDate': 'string',
-                'UnitPrice': 'float64',                                
-                'CustomerID': 'string',
-                'Country': 'string'
+                'invoice_number': 'string',
+                'stock_code': 'string',
+                'detail': 'string',
+                'quantity': 'string',
+                'invoice_date': 'string',
+                'unit_price': 'float64',                                
+                'customer_id': 'string',
+                'country': 'string'
                 }  
-    date_cols = ['fechaRegistro']         
+    date_cols = ['invoice_date']         
 
     # read a csv file with the properties required.
     df_products = pd.read_csv(io.StringIO(file_content), 
@@ -88,8 +88,8 @@ def load_data():
                         )
     # Reformat df
     df_products = df_products.replace(r"[\"]", r"'")
-    df_products['CustomerID'] = df_products['CustomerID'].fillna("")
-    df_products['Description'] = df_products['Description'].fillna("")
+    df_products['customer_id'] = df_products['customer_id'].fillna("")
+    df_products['detail'] = df_products['detail'].fillna("")
     list_df_products = df_products.values.tolist()
     list_df_products = [tuple(x) for x in list_df_products]
     current_table = "purchase.user_purchases"

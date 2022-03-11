@@ -10,17 +10,17 @@ from airflow.providers.amazon.aws.sensors.emr import EmrJobFlowSensor
 # [START howto_operator_emr_automatic_steps_config]
 SPARK_STEPS = [
     {
-        'Name': 'calculate_pi',
+        'Name': 'process_movie_reviews',
         'ActionOnFailure': 'CONTINUE',
         'HadoopJarStep': {
             'Jar': 'command-runner.jar',
-            'Args': ['s3://wz-de-academy-mau-scripts/movie_reviews_job.py', 'SparkPi', '10'],
+            'Args': ['s3://wz-de-academy-mau-scripts/movie_reviews_job.py', 'MovieReviewsJob', '10'],
         },
     }
 ]
 
 JOB_FLOW_OVERRIDES = {
-    'Name': 'PiCalc',
+    'Name': 'MovieReviews',
     'ReleaseLabel': 'emr-5.29.0',
     'Applications': [{'Name': 'Spark'}],
     'Instances': {

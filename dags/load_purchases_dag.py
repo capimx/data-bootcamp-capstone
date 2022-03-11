@@ -3,6 +3,7 @@ import io
 from airflow.providers.postgres.operators.postgres import PostgresOperator
 from airflow.providers.postgres.hooks.postgres import PostgresHook
 from airflow.providers.amazon.aws.hooks.s3 import S3Hook
+from airflow.operators.dummy import DummyOperator
 import logging
 import pandas as pd
 
@@ -48,11 +49,6 @@ def load_data():
             
     s3_key_object = s3.get_key(s3_key, s3_bucket)
     
-    # # Create table
-    # pg_hook.run(create_table_cmd)
-    # #curr = pg_hook.get_conn().cursor()
-
-    # 
     file_content = s3_key_object.get()['Body'].read().decode(encoding = "utf-8", errors = "ignore")
   
     list_target_fields = [    'invoice_number', 
@@ -116,6 +112,9 @@ welcome_operator = PythonOperator(task_id='welcome_task',
                                   python_callable=print_welcome, 
                                   dag=dag)
 
+end_operator = DummyOperator(task_id='end_task', dag=dag)
+
+
 load_data_task = PythonOperator (
     task_id='load_data',
     python_callable=load_data, 
@@ -128,17 +127,5 @@ create_table_operator = PostgresOperator(   task_id="create_table_task",
                                             dag=dag
                                         )
 
-""" s3_to_postgres_operator = S3ToPostgresTransfer(
-                            task_id = 'dag_s3_to_postgres',
-                            schema =  'purchase', #'public'
-                            table= 'purchases',
-                            s3_bucket = 'wz-de-academy-mau-raw-data',
-                            s3_key =  'user_purchase.csv',
-                            aws_conn_postgres_id = 'postgres_default',
-                            aws_conn_id = 'aws_default',   
-                            dag = dag
-) """
 
-welcome_operator >> create_table_operator >> load_data_task
-
-#welcome_operator.set_downstream(s3_to_postgres_operator)
+welcome_operator >> create_table_operator >> load_data_task >> end_operator

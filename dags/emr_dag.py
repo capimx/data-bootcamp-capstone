@@ -38,9 +38,7 @@ JOB_FLOW_OVERRIDES = {
     },
     'Steps': SPARK_STEPS,
     'JobFlowRole': 'EMR_EC2_DefaultRole',
-    'ServiceRole': 'EMR_DefaultRole',
-    'region_name' : 'us-east-2'
-}
+    'ServiceRole': 'EMR_DefaultRole'}
 # [END howto_operator_emr_automatic_steps_config]
 
 with DAG(

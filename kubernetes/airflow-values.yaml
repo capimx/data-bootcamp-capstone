@@ -37,4 +37,7 @@ logs:
     # If using a custom storageClass, pass name here
     storageClassName: nfs-client
 
-
+airflow:
+  extraPipPackages:
+    - "apache-airflow-providers-amazon~=2.6.0"
+    - "awscli"

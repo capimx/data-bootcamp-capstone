@@ -14,8 +14,16 @@ SPARK_STEPS = [
         'ActionOnFailure': 'CONTINUE',
         'HadoopJarStep': {
             'Jar': 'command-runner.jar',
-            'Args': ['s3://wz-de-academy-mau-scripts/movie_reviews_job.py', 'MovieReviewsJob', '10'],
-        },
+            'Args': ['spark-submit', '--deploy-mode','client', 's3://wz-de-academy-mau-scripts/movie_reviews_job.py']
+        }
+    },
+    {
+        'Name': 'process_logs',
+        'ActionOnFailure': 'CONTINUE',
+        'HadoopJarStep': {
+            'Jar': 'command-runner.jar',
+            'Args': ['spark-submit', '--deploy-mode','client', 's3://wz-de-academy-mau-scripts/log_reviews_job.py']
+        }
     }
 ]
 

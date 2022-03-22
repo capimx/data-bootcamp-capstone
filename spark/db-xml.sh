@@ -1,0 +1,1 @@
+sudo wget https://search.maven.org/remotecontent?filepath=com/databricks/spark-xml_2.12/0.14.0/spark-xml_2.12-0.14.0.jar -P /usr/lib/spark/jars/

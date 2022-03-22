@@ -28,7 +28,7 @@ SPARK_STEPS = [
 ]
 
 JOB_FLOW_OVERRIDES = {
-    'Name': 'MovieReviews',
+    'Name': 'ProcessReviews',
     'ReleaseLabel': 'emr-5.29.0',
     'Applications': [{'Name': 'Spark'}],
     'Instances': {
@@ -46,7 +46,17 @@ JOB_FLOW_OVERRIDES = {
     },
     'Steps': SPARK_STEPS,
     'JobFlowRole': 'EMR_EC2_DefaultRole',
-    'ServiceRole': 'EMR_DefaultRole'}
+    'ServiceRole': 'EMR_DefaultRole',
+    'BootstrapActions' : [
+        {
+            'Name' : 'databricks',
+            'ScriptBootstrapAction' : {
+                'Path' : 's3://wz-de-academy-mau-scripts/db-xml.sh'
+            }
+
+        }
+    ]
+}
 # [END howto_operator_emr_automatic_steps_config]
 
 with DAG(

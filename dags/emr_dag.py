@@ -29,7 +29,7 @@ SPARK_STEPS = [
 
 JOB_FLOW_OVERRIDES = {
     'Name': 'ProcessReviews',
-    'ReleaseLabel': 'emr-5.29.0',
+    'ReleaseLabel': 'emr-6.5.0',
     'Applications': [{'Name': 'Spark'}],
     'Instances': {
         'InstanceGroups': [
